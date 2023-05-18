@@ -15,19 +15,19 @@ const user = async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const user = { name: req.body.name, password: hashedPassword };
     users.push(user);
-    res.status(201).json({ msg: `welcome ${user.name}` });
+    res.status(201).json({ msg: `welcome ${user.name}`, user });
   } catch (error) {
     res.status(500).json({ msg: error.message });
   }
 };
 const login = async (req, res) => {
   const user = users.find((user) => (user.name = req.body.name));
-  if (user == null) {
+  if (!user || user == null) {
     res.status(400).send("cannot find user");
   }
   try {
     if (await bcrypt.compare(req.body.password, user.password)) {
-      res.send("success");
+      res.status(200).json(`Hi ${req.body.name}, you have successfully login`);
     } else {
       res.send("user not allowed");
     }
